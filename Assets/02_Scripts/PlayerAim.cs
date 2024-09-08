@@ -4,8 +4,17 @@ using UnityEngine;
 
 public class PlayerAim : MonoBehaviour
 {
-    public GameObject bullet;
-    
+    public Vector3 screeenPoo;
+    public Vector3 worldPoo;
+    public LayerMask layersOnhit;
+    public Transform aimPoint;
+    public GameObject prefab_bullet;
+
+
+
+
+
+
     private void Update()
     {
         Aim();
@@ -14,26 +23,39 @@ public class PlayerAim : MonoBehaviour
             Shoot();
         }
     }
-
-    public void Aim()
+    private void Aim()
     {
-        Vector3 mousePos = Input.mousePosition;
-        mousePos.z = 10f;
-        mousePos = Camera.main.ScreenToWorldPoint(mousePos);
-        mousePos.y = transform.position.y;
-        Debug.DrawRay(transform.position, mousePos - transform.position, Color.green);
-    
+        screeenPoo = Input.mousePosition;
+
+        Ray ray = Camera.main.ScreenPointToRay(screeenPoo);
+
+        if(Physics.Raycast(ray, out RaycastHit hitInfo, 100 ,layersOnhit))
+        {
+            worldPoo = hitInfo.point;
+            worldPoo.y = transform.position.y;
+        }
+        aimPoint.transform.position = worldPoo;
     }
+
 
     private void Shoot()
     {
-        Vector3 mousePos = Input.mousePosition;
-        mousePos.z = 10f;
-        mousePos = Camera.main.ScreenToWorldPoint(mousePos);
-        mousePos.y = transform.position.y;
+        screeenPoo = Input.mousePosition;
 
-        GameObject _bullet = Instantiate(bullet, transform.position, Quaternion.identity);
-        _bullet.transform.LookAt(mousePos - transform.position);
-        
+        Ray ray = Camera.main.ScreenPointToRay(screeenPoo);
+
+        if (Physics.Raycast(ray, out RaycastHit hitInfo, 100, layersOnhit))
+        {
+            worldPoo = hitInfo.point;
+            worldPoo.y = transform.position.y;
+        }
+
+
+        GameObject _obj = Instantiate(prefab_bullet, transform.position, Quaternion.identity);
+        _obj.transform.LookAt(worldPoo);
     }
+
+
+
 }
+
